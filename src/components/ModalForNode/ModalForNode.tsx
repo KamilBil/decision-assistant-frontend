@@ -58,7 +58,6 @@ function ModalForNode({ open, setOpen, node_to_edit, nds, setNodes }: ModalForNo
     const handleNodeClassChange = (event: React.SyntheticEvent, value: string | null) => {
         setNodeClass(value ?? "");
     };
-
     return (
         <div>
             <Dialog open={open} onClose={handleDecline}>
@@ -68,15 +67,22 @@ function ModalForNode({ open, setOpen, node_to_edit, nds, setNodes }: ModalForNo
                         {t('Node type')}:
                     </DialogContentText>
                     <Autocomplete
-                        disablePortal
                         id="combobox"
                         options={["circle", "square", "output"]}
                         sx={{ width: 300 }}
-                        renderInput={(params) => <TextField label="Class" />}
+                        renderInput={(params) => {
+                            const { InputLabelProps, ...rest } = params; // to remove InputLabelProps
+                            return (
+                                <TextField 
+                                    {...rest}
+                                    label="Class"
+                                />
+                            );
+                        }}
                         onChange={handleNodeClassChange}
                     />
 
-                    {node_to_edit && node_to_edit.className === "output" && (
+                    {node_to_edit && (
                         <>
                             <DialogContentText>
                                 {t('Value of the node')}

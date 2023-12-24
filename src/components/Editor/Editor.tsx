@@ -29,6 +29,7 @@ import ModalForNode from '../ModalForNode/ModalForNode';
 import CustomEdge from '../CustomEdge/CustomEdge';
 import ModalForEdge from '../ModalForEdge/ModalForEdge';
 import { useTranslation } from 'react-i18next';
+import { buildTree } from '../../helpers/treeHelpers';
 
 interface EditorProps {
     isNavbarActive: boolean;
@@ -57,6 +58,10 @@ const VisuallyHiddenInput = styled('input')`
 
 const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];
+const edgeTypes = {
+    default_with_value: CustomEdge,
+};
+
 
 const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     // TODO: Implement undo and redo
@@ -81,9 +86,24 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         setOpenModalForEdge(true);
     }
 
-    const edgeTypes = {
-        default_with_value: CustomEdge,
-    };
+    // TODO: po prostu manualnie wywołuj metode która aktualizuje wagi
+    const processValues = useCallback(() => {
+        console.log("test:", nodes);
+        let nodes_dict:{ [key: string]: Node } = {};
+        nodes.forEach(node => {
+            nodes_dict[node.id] = node;
+        });
+
+        console.log(nodes_dict);
+
+        let connected_nodes_list: string[][] = []
+        edges.forEach(edge => {
+            connected_nodes_list.push([edge.source, edge.target])
+        });
+
+        const tree = buildTree(connected_nodes_list);
+
+    }, []);
 
     const onConnect = useCallback(
         (params: Connection) => {
@@ -115,11 +135,13 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     }, [rfInstance])
 
     const setFlowState = (flowData: FlowData) => {
+        console.log("setting: ", flowData);
         const { nodes, edges, viewport } = flowData;
         const { x = 0, y = 0, zoom = 1 } = viewport || {};
         setNodes(nodes || []);
         setEdges(edges || []);
         setViewport({ x, y, zoom });
+        console.log("getting: ", nodes);
       };
       
 
@@ -157,16 +179,21 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         // TODO: prepare PDF report with table, and plot (on front or backend)
     }, [rfInstance])
 
-    const onOptimiseTree = useCallback(() => {
+    const onCompleteTree = useCallback(() => {
         if (!rfInstance) {
             return;
         }
 
-        const blob = new Blob([JSON.stringify(rfInstance.toObject())], { type: 'application/json' });
-        // TODO: optimise tree with backend
+        // TODO: temp solution
+        processValues();
     }, [rfInstance])
 
     const onSave = useCallback(() => {
+        console.log("zapis: ", nodes);
+        if (rfInstance) {
+            console.log("zapis2: ", JSON.stringify(rfInstance.toObject()));
+        }
+
         if (rfInstance) {
             const flow = rfInstance.toObject();
             localStorage.setItem(flowKey, JSON.stringify(flow));
@@ -204,11 +231,13 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
 
     const nodeColor = (node: Node) => {
         // TODO: use real colors
-        switch (node.type) {
-            case 'input':
-                return '#ff0072';
+        switch (node.className) {
+            case 'circle':
+                return '#296d98';
             case 'output':
-                return '#ff0072';
+                return '#d3d3d3';
+            case 'square':
+                return '#009150';
             default:
                 return '#ff0072';
         }
@@ -278,9 +307,9 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
                         component="label"
                         variant="contained"
                         startIcon={<AutoGraphRoundedIcon />}
-                        onClick={onOptimiseTree}
+                        onClick={onCompleteTree}
                     >
-                        {t('Simplify the tree')}
+                        {t('Complete the tree')}
                     </Button>
                 </Stack>
             </Panel>

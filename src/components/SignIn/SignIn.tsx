@@ -9,6 +9,7 @@ import { Button, Box, TextField, Grid, Link, Paper, Typography, Container } from
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 
+
 const SignIn = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const SignIn = () => {
   const signIn = useSignIn();
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  const onSubmit = async (values: { username: any; }) => {
+  const onSubmit = async (values: { username: string; password: string; }) => {
     setError("");
 
     try {

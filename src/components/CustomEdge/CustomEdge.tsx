@@ -37,7 +37,7 @@ const CustomEdge: FC<EdgeProps> = ({
                 >
                     {data.description}
                     <div style={{ height: '20px' }}></div>
-                    {data.value}
+                    {data.value === 0 ? '' : data.value}
                 </div>
             </EdgeLabelRenderer>
         </>
