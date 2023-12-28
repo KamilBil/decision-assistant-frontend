@@ -1,6 +1,9 @@
 {
     "Sign in": "Logowanie",
     "Sign up": "Rejestracja",
+    "Incorrect credentials.": "Niepoprawne dane logowania.",
+    "Connection error.": "Błąd połączenia.",
+    "Username": "Nazwa użytkownika",
     "I agree with the regulations.": "Zgadzam się z regulaminem.",
     "Password": "Hasło",
     "Already have an account? Sign in.": "Masz już konto? Zaloguj się.",

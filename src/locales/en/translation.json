@@ -1,6 +1,9 @@
 {
     "Sign in": "Sign in",
     "Sign up": "Sign up",
+    "Incorrect credentials.": "Incorrect credentials.",
+    "Connection error.": "Connection error.",
+    "Username": "Username",
     "I agree with the regulations.": "I agree with the regulations.",
     "Password": "Password",
     "Already have an account? Sign in.": "Already have an account? Sign in.",
