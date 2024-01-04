@@ -88,7 +88,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
 
     // TODO: po prostu manualnie wywołuj metode która aktualizuje wagi
     const processValues = useCallback(() => {
-        console.log("test:", nodes);
         let nodes_dict:{ [key: string]: Node } = {};
         nodes.forEach(node => {
             nodes_dict[node.id] = node;

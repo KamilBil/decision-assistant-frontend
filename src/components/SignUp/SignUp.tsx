@@ -21,6 +21,7 @@ import { useState } from "react";
 import * as Yup from "yup";
 import { useSignIn } from "react-auth-kit";
 import { Alert } from "@mui/material";
+import ApiContext from "../../ApiContext";
 
 const defaultTheme = createTheme();
 
@@ -29,7 +30,8 @@ export default function SignUp() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const signIn = useSignIn();
-  const apiUrl = process.env.REACT_APP_API_URL; // move it to Context API
+  const context = React.useContext(ApiContext);
+  const { apiUrl } = context;
 
   const formik = useFormik({
     initialValues: {
@@ -52,9 +54,7 @@ export default function SignUp() {
       console.log(values);
       try {
         const response_sign_up = await axios.post(apiUrl + "/sign_up/", values);
-        console.log("first: ", response_sign_up);
         const response_sign_in = await axios.post(apiUrl + "/token/", values);
-        console.log("second: ", response_sign_in);
 
         signIn({
           token: response_sign_in.data.access,
@@ -65,7 +65,6 @@ export default function SignUp() {
 
         navigate("/editor");
       } catch (err) {
-        console.log(err);
         setError("error");
       }
     },

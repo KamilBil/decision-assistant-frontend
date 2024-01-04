@@ -18,13 +18,16 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
+import ApiContext from "../../ApiContext";
+import React from "react";
 
 const SignIn = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { t } = useTranslation();
   const signIn = useSignIn();
-  const apiUrl = process.env.REACT_APP_API_URL; // move it to Context API
+  const context = React.useContext(ApiContext);
+  const { apiUrl } = context;
 
   const onSubmit = async (values: { username: string; password: string }) => {
     setError("");
