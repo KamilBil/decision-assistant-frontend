@@ -34,6 +34,7 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(apiUrl + "/token/", values);
+      localStorage.setItem("token", response.data.access);
 
       signIn({
         token: response.data.access,

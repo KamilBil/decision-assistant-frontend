@@ -55,6 +55,7 @@ export default function SignUp() {
       try {
         const response_sign_up = await axios.post(apiUrl + "/sign_up/", values);
         const response_sign_in = await axios.post(apiUrl + "/token/", values);
+        localStorage.setItem("token", response_sign_in.data.access);
 
         signIn({
           token: response_sign_in.data.access,
