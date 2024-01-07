@@ -34,7 +34,6 @@ import CustomEdge from "../CustomEdge/CustomEdge";
 import ModalForEdge from "../ModalForEdge/ModalForEdge";
 import { useTranslation } from "react-i18next";
 import { buildTree } from "../../helpers/treeHelpers";
-import { UploadFile } from "@mui/icons-material";
 import Tooltip from "@mui/material/Tooltip";
 
 interface EditorProps {
