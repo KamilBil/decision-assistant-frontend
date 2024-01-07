@@ -21,8 +21,6 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
-import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SaveIcon from "@mui/icons-material/Save";
 import HistoryIcon from "@mui/icons-material/History";
