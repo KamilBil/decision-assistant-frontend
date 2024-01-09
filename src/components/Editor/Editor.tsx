@@ -33,7 +33,10 @@ import ModalForNode from "../ModalForNode/ModalForNode";
 import CustomEdge from "../CustomEdge/CustomEdge";
 import ModalForEdge from "../ModalForEdge/ModalForEdge";
 import { useTranslation } from "react-i18next";
-import { buildTree } from "../../helpers/treeHelpers";
+import {
+  buildTree,
+  calculate_expected_utility,
+} from "../../helpers/treeHelpers";
 import Tooltip from "@mui/material/Tooltip";
 
 interface EditorProps {
@@ -97,13 +100,15 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
   };
 
   const processValues = useCallback(() => {
-    console.log("test123");
     let nodes_dict: { [key: string]: Node } = {};
     nodes.forEach((node) => {
       nodes_dict[node.id] = node;
     });
 
-    console.log(nodes_dict);
+    let edges_dict: { [key: string]: Edge } = {};
+    edges.forEach((edge) => {
+      edges_dict[edge.target] = edge;
+    });
 
     let connected_nodes_list: string[][] = [];
     edges.forEach((edge) => {
@@ -111,7 +116,8 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     });
 
     const tree = buildTree(connected_nodes_list);
-  }, []);
+    return { nodes_dict, edges_dict, tree };
+  }, [nodes, edges]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -197,9 +203,10 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
       return;
     }
 
-    // TODO: temp solution
-    processValues();
-  }, [rfInstance]);
+    const { nodes_dict, edges_dict, tree } = processValues();
+    const node_id: string = Object.keys(tree)[0];
+    const expected_utility = calculate_expected_utility(nodes_dict, edges_dict, tree[Object.keys(tree)[0]], node_id);
+  }, [nodes, edges]);
 
   const onSave = useCallback(() => {
     if (rfInstance) {
@@ -231,7 +238,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         id: getNodeId(),
         type: className === "output" ? "output" : "default",
         className: className,
-        data: { label: "Click me!" },
+        data: { label: "0" },
         sourcePosition: Position.Right,
         targetPosition: Position.Left,
         position: {
