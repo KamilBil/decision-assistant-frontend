@@ -35,10 +35,10 @@ export function calculate_expected_utility(
   nodes_dict: { [key: string]: Node },
   edges_dict: { [key: string]: Edge },
   tree: NodeMap,
-  current_node_id: string,
+  current_node_id: string
 ): number {
   if (Object.keys(tree).length === 0) {
-    return parseFloat(nodes_dict[current_node_id].data.label);
+    return nodes_dict[current_node_id].data.value;
   } else {
     let sum = 0;
     for (let key in tree) {
@@ -47,9 +47,8 @@ export function calculate_expected_utility(
           calculate_expected_utility(nodes_dict, edges_dict, tree[key], key) *
           edges_dict[key].data.value;
       }
-
     }
-    nodes_dict[current_node_id].data.label = sum;
+    nodes_dict[current_node_id].data.value = sum;
     return sum;
   }
 }

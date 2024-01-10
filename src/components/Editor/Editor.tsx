@@ -126,7 +126,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         type: "default_with_value",
         data: {
           description: "placeholder",
-          value: 12,
+          value: 0.5,
         },
       };
       setEdges((eds) => addEdge(newEdge, eds));
@@ -198,14 +198,32 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     // TODO: prepare PDF report with table, and plot (on front or backend)
   }, [rfInstance]);
 
-  const onCompleteTree = useCallback(() => {
+  const calculateTree = useCallback(() => {
     if (!rfInstance) {
       return;
     }
 
     const { nodes_dict, edges_dict, tree } = processValues();
     const node_id: string = Object.keys(tree)[0];
-    const expected_utility = calculate_expected_utility(nodes_dict, edges_dict, tree[Object.keys(tree)[0]], node_id);
+    const expected_utility = calculate_expected_utility(
+      nodes_dict,
+      edges_dict,
+      tree[Object.keys(tree)[0]],
+      node_id
+    );
+    
+    // update the visualisation
+    const newNodes = nodes.map((node: Node) => {
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          value: node.data.value,
+          label: node.data.value,
+        },
+      };
+    });
+    setNodes(newNodes);
   }, [nodes, edges]);
 
   const onSave = useCallback(() => {
@@ -238,7 +256,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         id: getNodeId(),
         type: className === "output" ? "output" : "default",
         className: className,
-        data: { label: "0" },
+        data: { label: "0", value: 0 },
         sourcePosition: Position.Right,
         targetPosition: Position.Left,
         position: {
@@ -376,7 +394,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
             component="label"
             variant="contained"
             startIcon={<AutoGraphRoundedIcon />}
-            onClick={onCompleteTree}
+            onClick={calculateTree}
           >
             {t("Complete the tree")}
           </Button>
