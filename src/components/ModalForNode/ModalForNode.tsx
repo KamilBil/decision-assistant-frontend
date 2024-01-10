@@ -69,13 +69,14 @@ function ModalForNode({ open, setOpen, node_to_edit, nds, setNodes }: ModalForNo
                     <Autocomplete
                         id="combobox"
                         options={["circle", "square", "output"]}
+                        defaultValue={node_to_edit.className}
                         sx={{ width: 300 }}
                         renderInput={(params) => {
                             const { InputLabelProps, ...rest } = params; // to remove InputLabelProps
                             return (
                                 <TextField 
                                     {...rest}
-                                    label="Class"
+                                    label={t("Type")}
                                 />
                             );
                         }}
@@ -92,6 +93,7 @@ function ModalForNode({ open, setOpen, node_to_edit, nds, setNodes }: ModalForNo
                                 margin="dense"
                                 id="name"
                                 label={t("Value")}
+                                value={node_to_edit.data.value}
                                 type="number"
                                 fullWidth
                                 placeholder={node_to_edit ? node_to_edit.data.label : ""}
