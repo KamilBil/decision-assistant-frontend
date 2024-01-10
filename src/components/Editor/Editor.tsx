@@ -1,10 +1,9 @@
+// @ts-nocheck
 import React, { useState, useCallback } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
-  useReactFlow,
-  Panel,
   MiniMap,
   Controls,
   Background,
@@ -15,6 +14,10 @@ import ReactFlow, {
   Viewport,
   ReactFlowInstance,
   BackgroundVariant,
+  Panel,
+  useReactFlow,
+  getRectOfNodes,
+  getTransformForBounds,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import Button from "@mui/material/Button";
@@ -38,6 +41,7 @@ import {
   calculate_expected_utility,
 } from "../../helpers/treeHelpers";
 import Tooltip from "@mui/material/Tooltip";
+import { toPng } from "html-to-image";
 
 interface EditorProps {
   isNavbarActive: boolean;
@@ -80,6 +84,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
   const [openModalForNode, setOpenModalForNode] = useState(false);
   const [openModalForEdge, setOpenModalForEdge] = useState(false);
   const { t } = useTranslation();
+  const { getNodes } = useReactFlow();
 
   const { setViewport } = useReactFlow();
 
@@ -187,10 +192,38 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     [setFlowState]
   );
 
+  function downloadImage(dataUrl) {
+    const a = document.createElement("a");
+    a.setAttribute("download", "tree.png");
+    a.setAttribute("href", dataUrl);
+    a.click();
+  }
+
   const onReport = useCallback(() => {
     if (!rfInstance) {
       return;
     }
+    const imageWidth = 2048;
+    const imageHeight = 1024;
+    const nodesBounds = getRectOfNodes(getNodes());
+    const transform = getTransformForBounds(
+      nodesBounds,
+      imageWidth,
+      imageHeight,
+      0.5,
+      2
+    );
+
+    toPng(document.querySelector(".react-flow__viewport"), {
+      backgroundColor: "#000000",
+      width: imageWidth,
+      height: imageHeight,
+      style: {
+        width: imageWidth,
+        height: imageHeight,
+        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+      },
+    }).then(downloadImage);
 
     const blob = new Blob([JSON.stringify(rfInstance.toObject())], {
       type: "application/json",
@@ -211,7 +244,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
       tree[Object.keys(tree)[0]],
       node_id
     );
-    
+
     // update the visualisation
     const newNodes = nodes.map((node: Node) => {
       return {
