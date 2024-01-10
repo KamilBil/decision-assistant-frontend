@@ -23,7 +23,7 @@ export function buildTree(connections: string[][]) {
 
   // Builds a tree, starting from the root
   Object.keys(nodes).forEach((nodeId) => {
-    if (!connections.some(([_, child]) => child == nodeId)) {
+    if (!connections.some(([_, child]) => child === nodeId)) {
       tree[nodeId] = nodes[nodeId];
     }
   });
