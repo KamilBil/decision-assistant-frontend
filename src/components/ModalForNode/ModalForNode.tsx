@@ -76,7 +76,7 @@ function ModalForNode({
       <Dialog open={open} onClose={handleDecline}>
         <DialogTitle>{t("Adjust the node")}</DialogTitle>
         <DialogContent>
-          <DialogContentText>{t("Node type")}:</DialogContentText>
+          <DialogContentText>{t("Node type")}</DialogContentText>
           <Autocomplete
             id="combobox"
             options={["circle", "square", "output"]}

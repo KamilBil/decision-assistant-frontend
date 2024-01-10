@@ -125,7 +125,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         ...params,
         type: "default_with_value",
         data: {
-          description: "placeholder",
+          description: "",
           value: 0.5,
         },
       };
