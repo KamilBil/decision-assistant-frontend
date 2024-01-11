@@ -235,13 +235,17 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     if (!rfInstance) {
       return;
     }
-
     const { nodes_dict, edges_dict, tree } = processValues();
     const node_id: string = Object.keys(tree)[0];
+
+    if (!node_id) {
+      return;
+    }
+
     const expected_utility = calculate_expected_utility(
       nodes_dict,
       edges_dict,
-      tree[Object.keys(tree)[0]],
+      tree[node_id],
       node_id
     );
 
@@ -332,8 +336,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
           open={openModalForNode}
           setOpen={setOpenModalForNode}
           node_to_edit={nodeToEdit}
-          nds={nodes}
-          setNodes={setNodes}
         />
       )}
       {edgeToEdit && (
@@ -341,8 +343,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
           open={openModalForEdge}
           setOpen={setOpenModalForEdge}
           edge_to_edit={edgeToEdit}
-          edges={edges}
-          setEdges={setEdges}
         />
       )}
 

@@ -7,57 +7,60 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { Node } from "reactflow";
+import { Node, getConnectedEdges, useReactFlow } from "reactflow";
 import { useTranslation } from "react-i18next";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, IconButton, Tooltip } from "@mui/material";
 
 interface ModalForNodeProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   node_to_edit: Node;
-  nds: Node[];
-  setNodes: (edges: Node[]) => void;
 }
 
-function ModalForNode({
-  open,
-  setOpen,
-  node_to_edit,
-  nds,
-  setNodes,
-}: ModalForNodeProps) {
+function ModalForNode({ open, setOpen, node_to_edit }: ModalForNodeProps) {
+  const { setNodes, getEdges, setEdges } = useReactFlow();
   const [value, setValue] = useState(node_to_edit.data.value);
   const [nodeClass, setNodeClass] = useState(node_to_edit.className);
   const { t } = useTranslation();
 
-    useEffect(() => {
-        setValue(node_to_edit.data.value);
-        setNodeClass(node_to_edit.className);
-    }, [open, node_to_edit]);
+  const onRemove = () => {
+    const edgesToRemove = getConnectedEdges([node_to_edit], getEdges());
+    setNodes((nodes) => nodes.filter((node) => node.id !== node_to_edit.id));
+    setEdges((edges) =>
+      edges.filter((edge) => !edgesToRemove.map((i) => i.id).includes(edge.id))
+    );
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setValue(node_to_edit.data.value);
+    setNodeClass(node_to_edit.className);
+  }, [open, node_to_edit]);
 
   const handleDecline = () => {
     setOpen(false);
   };
 
   const handleAccept = () => {
-    const newNodes = nds.map((node: Node) => {
-      if (node.id === node_to_edit.id) {
-        // it's important tp create a new object here
-        // in order to notify react flow about the change
-        return {
-          ...node,
-          className: nodeClass,
-          type: nodeClass === "output" ? "output" : "default",
-          data: {
-            ...node.data,
-            value: value,
-            label: value,
-          },
-        };
-      }
+    setNodes((nodes) =>
+      nodes.map((node: Node) => {
+        if (node.id === node_to_edit.id) {
+          return {
+            ...node,
+            className: nodeClass,
+            type: nodeClass === "output" ? "output" : "default",
+            data: {
+              ...node.data,
+              value: value,
+              label: value,
+            },
+          };
+        }
 
-      return node;
-    });
-    setNodes(newNodes);
+        return node;
+      })
+    );
     setOpen(false);
   };
 
@@ -106,13 +109,21 @@ function ModalForNode({
             </>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDecline} color="primary">
-            {t("Cancel")}
-          </Button>
-          <Button onClick={handleAccept} color="primary">
-            {t("Submit")}
-          </Button>
+        <DialogActions style={{ justifyContent: "space-between" }}>
+          <Tooltip title={t("Remove")}>
+            <IconButton onClick={onRemove}>
+              <DeleteIcon color="error"></DeleteIcon>
+            </IconButton>
+          </Tooltip>
+
+          <Box>
+            <Button onClick={handleDecline} color="primary">
+              {t("Cancel")}
+            </Button>
+            <Button onClick={handleAccept} color="primary">
+              {t("Submit")}
+            </Button>
+          </Box>
         </DialogActions>
       </Dialog>
     </div>

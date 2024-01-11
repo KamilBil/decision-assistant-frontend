@@ -6,27 +6,27 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { Edge } from "reactflow";
+import { Edge, useReactFlow } from "reactflow";
 import { useTranslation } from "react-i18next";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, IconButton, Tooltip } from "@mui/material";
 
 interface ModalForEdgeProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   edge_to_edit: Edge;
-  edges: Edge[];
-  setEdges: (edges: Edge[]) => void;
 }
 
-function ModalForEdge({
-  open,
-  setOpen,
-  edge_to_edit,
-  edges,
-  setEdges,
-}: ModalForEdgeProps) {
+function ModalForEdge({ open, setOpen, edge_to_edit }: ModalForEdgeProps) {
+  const { setEdges } = useReactFlow();
   const [value, setValue] = useState(edge_to_edit.data.value);
   const [description, setDescription] = useState(edge_to_edit.data.description);
   const { t } = useTranslation();
+
+  const onRemove = () => {
+    setEdges((edges) => edges.filter((edge) => edge.id !== edge_to_edit.id));
+    setOpen(false);
+  };
 
   useEffect(() => {
     setValue(edge_to_edit.data.value);
@@ -38,24 +38,22 @@ function ModalForEdge({
   };
 
   const handleAccept = () => {
-    const newEdges = edges.map((edge: Edge) => {
-      if (edge.id === edge_to_edit.id) {
-        // it's important to create a new object here
-        // in order to notify react flow about the change
-        return {
-          ...edge,
-          data: {
-            ...edge.data,
-            value: value,
-            description: description,
-          },
-        };
-      }
+    setEdges((edges) =>
+      edges.map((edge: Edge) => {
+        if (edge.id === edge_to_edit.id) {
+          return {
+            ...edge,
+            data: {
+              ...edge.data,
+              value: value,
+              description: description,
+            },
+          };
+        }
 
-      return edge;
-    });
-
-    setEdges(newEdges);
+        return edge;
+      })
+    );
     setOpen(false);
   };
 
@@ -100,13 +98,21 @@ function ModalForEdge({
             onChange={handleDescriptionChange}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDecline} color="primary">
-            {t("Cancel")}
-          </Button>
-          <Button onClick={handleAccept} color="primary">
-            {t("Submit")}
-          </Button>
+        <DialogActions style={{ justifyContent: "space-between" }}>
+          <Tooltip title={t("Remove")}>
+            <IconButton onClick={onRemove}>
+              <DeleteIcon color="error"></DeleteIcon>
+            </IconButton>
+          </Tooltip>
+
+          <Box>
+            <Button onClick={handleDecline} color="primary">
+              {t("Cancel")}
+            </Button>
+            <Button onClick={handleAccept} color="primary">
+              {t("Submit")}
+            </Button>
+          </Box>
         </DialogActions>
       </Dialog>
     </div>
