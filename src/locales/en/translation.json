@@ -36,5 +36,7 @@
     "Description": "Description",
     "Cancel": "Cancel",
     "Submit": "Submit",
-    "Remove": "Remove"
+    "Remove": "Remove",
+    "Report": "Report",
+    "Generated with DecisionAssistant by": "Generated with DecisionAssistant by"
 }

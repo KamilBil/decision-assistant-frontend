@@ -37,5 +37,7 @@
   "Description": "Opis",
   "Cancel": "Anuluj",
   "Submit": "Zatwierdź",
-  "Remove": "Usuń"
+  "Remove": "Usuń",
+  "Report": "Raport",
+  "Generated with DecisionAssistant by": "Wygenerowano w programie DecisionAssistant przez użytkownika"
 }

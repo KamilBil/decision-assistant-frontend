@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
+import { useTranslation } from "react-i18next";
 
 const styles = StyleSheet.create({
   page: {
@@ -55,12 +56,14 @@ interface PdfReportProps {
   author: string;
 }
 
-const PdfReport = ({ base64Image, author }: PdfReportProps) => (
+const PdfReport = ({ base64Image, author }: PdfReportProps) => {
+  const { t } = useTranslation();
+  return (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Report</Text>
+      <Text style={styles.title}>{t("Report")}</Text>
       <Text style={styles.author} fixed>
-        Generated with DecisionAssistant by {author}
+        {t("Generated with DecisionAssistant by")} {author}
       </Text>
 
       <View style={styles.image}>
@@ -76,6 +79,6 @@ const PdfReport = ({ base64Image, author }: PdfReportProps) => (
       />
     </Page>
   </Document>
-);
+)};
 
 export default PdfReport;
