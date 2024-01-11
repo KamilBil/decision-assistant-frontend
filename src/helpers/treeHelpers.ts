@@ -40,15 +40,26 @@ export function calculate_expected_utility(
   if (Object.keys(tree).length === 0) {
     return nodes_dict[current_node_id].data.value;
   } else {
-    let sum = 0;
-    for (let key in tree) {
-      if (tree.hasOwnProperty(key)) {
-        sum +=
-          calculate_expected_utility(nodes_dict, edges_dict, tree[key], key) *
-          edges_dict[key].data.value;
+    let result = 0;
+    if (nodes_dict[current_node_id].className=="circle"){
+      for (let key in tree) {
+        if (tree.hasOwnProperty(key)) {
+          result +=
+            calculate_expected_utility(nodes_dict, edges_dict, tree[key], key) *
+            edges_dict[key].data.value;
+        }
+      }
+    }else{
+      for (let key in tree) {
+        if (tree.hasOwnProperty(key)) {
+          const temp = calculate_expected_utility(nodes_dict, edges_dict, tree[key], key);
+          if (result < temp) {
+            result = temp;
+          }
+        }
       }
     }
-    nodes_dict[current_node_id].data.value = sum;
-    return sum;
+    nodes_dict[current_node_id].data.value = result;
+    return result;
   }
 }
