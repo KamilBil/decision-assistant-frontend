@@ -5,7 +5,6 @@ import App from './App';
 import { AuthProvider } from "react-auth-kit";
 import './services/i18n'
 import reportWebVitals from './reportWebVitals';
-import ApiProvider from './components/ApiProvider/ApiProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -18,9 +17,7 @@ root.render(
       cookieDomain={window.location.hostname}
       cookieSecure={false}
     >
-      <ApiProvider>
       <App />
-      </ApiProvider>
     </AuthProvider>
   </React.StrictMode>
 );

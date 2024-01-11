@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { List, ListItem, ListItemText, Button, TextField } from "@mui/material";
 import axios from "axios";
 import ApiContext from "../../ApiContext";
+import { useAuthHeader } from "react-auth-kit";
 
 const ProjectsManager: React.FC = () => {
   const [decisionTrees, setDecisionTrees] = useState<DecisionTree[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const context = React.useContext(ApiContext);
   const { apiUrl } = context;
+  const authHeader = useAuthHeader();
 
   useEffect(() => {
     setIsLoading(true);
-    const token = localStorage.getItem("token");
+    const token = authHeader();
     axios
       .get(apiUrl + "/trees/", {
         headers: {

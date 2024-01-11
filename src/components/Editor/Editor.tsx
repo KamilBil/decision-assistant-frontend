@@ -42,6 +42,9 @@ import {
 } from "../../helpers/treeHelpers";
 import Tooltip from "@mui/material/Tooltip";
 import { toPng } from "html-to-image";
+import { pdf } from "@react-pdf/renderer";
+import PdfReport from "../PdfReport/PdfReport";
+import { useAuthUser } from "react-auth-kit";
 
 interface EditorProps {
   isNavbarActive: boolean;
@@ -85,7 +88,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
   const [openModalForEdge, setOpenModalForEdge] = useState(false);
   const { t } = useTranslation();
   const { getNodes } = useReactFlow();
-
+  const auth = useAuthUser();
   const { setViewport } = useReactFlow();
 
   const changeTextInNode = (
@@ -156,7 +159,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
   }, [rfInstance]);
 
   const setFlowState = (flowData: FlowData) => {
-    console.log("setting: ", flowData);
     const { nodes, edges, viewport } = flowData;
     const { x = 0, y = 0, zoom = 1 } = viewport || {};
     setNodes(nodes || []);
@@ -192,20 +194,26 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     [setFlowState]
   );
 
-  function downloadImage(dataUrl) {
-    const a = document.createElement("a");
-    a.setAttribute("download", "tree.png");
-    a.setAttribute("href", dataUrl);
-    a.click();
-  }
+  const downloadPdf = async (treeImage) => {
+    const blob = await pdf(<PdfReport base64Image={treeImage} author={auth().username} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "report.pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
 
-  const onReport = useCallback(() => {
+  const onReport = async () => {
     if (!rfInstance) {
       return;
     }
-    const imageWidth = 2048;
-    const imageHeight = 1024;
     const nodesBounds = getRectOfNodes(getNodes());
+    const imageWidth = nodesBounds.width;
+    const imageHeight = nodesBounds.height;
+
     const transform = getTransformForBounds(
       nodesBounds,
       imageWidth,
@@ -223,13 +231,11 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         height: imageHeight,
         transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
       },
-    }).then(downloadImage);
-
-    const blob = new Blob([JSON.stringify(rfInstance.toObject())], {
-      type: "application/json",
+    }).then((treeImage) => {
+      downloadPdf(treeImage);
     });
     // TODO: prepare PDF report with table, and plot (on front or backend)
-  }, [rfInstance]);
+  };
 
   const calculateTree = useCallback(() => {
     if (!rfInstance) {
