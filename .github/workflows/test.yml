@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-        REACT_APP_API_URL: "https://decision-assistant-backend.kamilbil.pl"
+        REACT_APP_API_URL: "https://test-decision-assistant-backend.kamilbil.pl"
     steps:
       -
         name: Checkout
@@ -30,4 +30,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/decision-assistant-frontend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/decision-assistant-frontend:test
