@@ -1,15 +1,15 @@
-name: Docker Image CI
+name: Docker Image CI - test branch
 
 on:
   push:
     branches: 
-      - "master"
+      - "test"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      REACT_APP_API_URL: "https://decision-assistant-backend.kamilbil.pl"
+        REACT_APP_API_URL: "https://decision-assistant-backend.kamilbil.pl"
     steps:
       -
         name: Checkout
