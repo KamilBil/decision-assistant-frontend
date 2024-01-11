@@ -215,7 +215,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     );
 
     toPng(document.querySelector(".react-flow__viewport"), {
-      backgroundColor: "#000000",
+      backgroundColor: "#ffffff",
       width: imageWidth,
       height: imageHeight,
       style: {
