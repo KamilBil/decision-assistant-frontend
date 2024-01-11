@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GLOBAL_VAR: "https://decision-assistant-backend.kamilbil.pl"
     steps:
       -
         name: Checkout

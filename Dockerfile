@@ -3,7 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENV REACT_APP_API_URL="https://decision-assistant-backend.kamilbil.pl"
 RUN npm run build
 
 FROM nginx:alpine
