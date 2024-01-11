@@ -39,6 +39,7 @@ import { useTranslation } from "react-i18next";
 import {
   buildTree,
   calculate_expected_utility,
+  fix_probabilities,
 } from "../../helpers/treeHelpers";
 import Tooltip from "@mui/material/Tooltip";
 import { toPng } from "html-to-image";
@@ -195,7 +196,9 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
   );
 
   const downloadPdf = async (treeImage) => {
-    const blob = await pdf(<PdfReport base64Image={treeImage} author={auth().username} />).toBlob();
+    const blob = await pdf(
+      <PdfReport base64Image={treeImage} author={auth().username} />
+    ).toBlob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -247,6 +250,8 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     if (!node_id) {
       return;
     }
+
+    fix_probabilities(nodes_dict, edges_dict, tree[node_id], node_id);
 
     const expected_utility = calculate_expected_utility(
       nodes_dict,
