@@ -237,7 +237,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     }).then((treeImage) => {
       downloadPdf(treeImage);
     });
-    // TODO: prepare PDF report with table, and plot (on front or backend)
   };
 
   const calculateTree = useCallback(() => {
