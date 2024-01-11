@@ -4,7 +4,7 @@ import theme from "./theme";
 import Navbar from "./components/Navbar/Navbar";
 import Editor from "./components/Editor/Editor";
 import { ReactFlowProvider } from "reactflow";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { RequireAuth } from "react-auth-kit";
 import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
@@ -19,6 +19,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
+        <Route index element={<Navigate to="/editor" />} />
           <Route path="/projects" element={
             <RequireAuth loginPath="/signin">
                <Box
