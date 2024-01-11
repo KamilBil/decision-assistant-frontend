@@ -1,13 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
 import { AuthProvider } from "react-auth-kit";
-import './services/i18n'
-import reportWebVitals from './reportWebVitals';
+import "./services/i18n";
+import reportWebVitals from "./reportWebVitals";
+import ApiProvider from "./components/ApiProvider/ApiProvider";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
@@ -17,7 +18,9 @@ root.render(
       cookieDomain={window.location.hostname}
       cookieSecure={false}
     >
-      <App />
+      <ApiProvider>
+        <App />
+      </ApiProvider>
     </AuthProvider>
   </React.StrictMode>
 );
