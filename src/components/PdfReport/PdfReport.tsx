@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     padding: 10,
     flexGrow: 1,
   },
-  image: { marginHorizontal: 10 },
+  image: { marginHorizontal: 20 },
   title: {
     margin: 12,
     fontSize: 24,
@@ -51,34 +51,53 @@ const styles = StyleSheet.create({
   },
 });
 
+function removePolishCharacters(text: string) {
+  return text
+    .replace(/ą/g, "a")
+    .replace(/ć/g, "c")
+    .replace(/ę/g, "e")
+    .replace(/ł/g, "l")
+    .replace(/ń/g, "n")
+    .replace(/ó/g, "o")
+    .replace(/ś/g, "s")
+    .replace(/ź/g, "z")
+    .replace(/ż/g, "z");
+}
+
 interface PdfReportProps {
   base64Image: string;
   author: string;
+  bestPath: string;
 }
 
-const PdfReport = ({ base64Image, author }: PdfReportProps) => {
+const PdfReport = ({ base64Image, author, bestPath }: PdfReportProps) => {
   const { t } = useTranslation();
   return (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>{t("Report")}</Text>
-      <Text style={styles.author} fixed>
-        {t("Generated with DecisionAssistant by")} {author}
-      </Text>
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.title}>{t("Report")}</Text>
+        <Text style={styles.author} fixed>
+          {t("Generated with DecisionAssistant by")} {author}
+        </Text>
 
-      <View style={styles.image}>
-        <Image src={base64Image} />
-      </View>
+        <View style={styles.image}>
+          <Image src={base64Image} />
+        </View>
 
-      <Text style={styles.section}>Text</Text>
+        <Text style={styles.section}>
+          {t("Best path")}: {removePolishCharacters(bestPath)}
+        </Text>
 
-      <Text
-        style={styles.pageNumber}
-        render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
-        fixed
-      />
-    </Page>
-  </Document>
-)};
+        <Text
+          style={styles.pageNumber}
+          render={({ pageNumber, totalPages }) =>
+            `${pageNumber} / ${totalPages}`
+          }
+          fixed
+        />
+      </Page>
+    </Document>
+  );
+};
 
 export default PdfReport;

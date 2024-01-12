@@ -75,7 +75,7 @@ export function fix_probabilities(
   tree: NodeMap,
   current_node_id: string
 ): void {
-  if (Object.keys(tree).length > 0) {
+  if (Object.keys(tree).length) {
     for (let key in tree) {
       if (tree.hasOwnProperty(key)) {
         fix_probabilities(nodes_dict, edges_dict, tree[key], key);
@@ -86,7 +86,7 @@ export function fix_probabilities(
     if (nodes_dict[current_node_id].className === "square") {
       for (let edge_id in edges_dict) {
         if (
-          tree.hasOwnProperty(edge_id) &&
+          edges_dict.hasOwnProperty(edge_id) &&
           edges_dict[edge_id].source === current_node_id
         ) {
           edges_dict[edge_id].data.value = null;
@@ -101,7 +101,7 @@ export function fix_probabilities(
 
       for (let edge_id in edges_dict) {
         if (
-          tree.hasOwnProperty(edge_id) &&
+          edges_dict.hasOwnProperty(edge_id) &&
           edges_dict[edge_id].source === current_node_id
         ) {
           found_edges.push(edges_dict[edge_id]);

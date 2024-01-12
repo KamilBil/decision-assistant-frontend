@@ -46,6 +46,7 @@ import { toPng } from "html-to-image";
 import { pdf } from "@react-pdf/renderer";
 import PdfReport from "../PdfReport/PdfReport";
 import { useAuthUser } from "react-auth-kit";
+import ChartJsImage from "chartjs-to-image";
 
 interface EditorProps {
   isNavbarActive: boolean;
@@ -195,9 +196,9 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     [setFlowState]
   );
 
-  const downloadPdf = async (treeImage) => {
+  const downloadPdf = async (treeImage, bestPath) => {
     const blob = await pdf(
-      <PdfReport base64Image={treeImage} author={auth().username} />
+      <PdfReport base64Image={treeImage} author={auth().username} bestPath={bestPath}/>
     ).toBlob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -209,10 +210,47 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     URL.revokeObjectURL(url);
   };
 
+  const bestWay = (nodes_dict, edges_dict, tree) => {
+    let max_value: number = 0;
+    let max_key: string = "";
+    for (let key in tree) {
+      if (nodes_dict[key].data.value > max_value) {
+        max_value = nodes_dict[key].data.value;
+        max_key = key;
+      }
+    }
+    if (Object.keys(tree[max_key]).length) {
+      let path = bestWay(nodes_dict, edges_dict, tree[max_key]);
+      path.push(nodes_dict[max_key]);
+      return path;
+    } else {
+      return [nodes_dict[max_key]];
+    }
+  };
+
   const onReport = async () => {
     if (!rfInstance) {
       return;
     }
+    calculateTree(); // to have up-to-data tree
+    const { nodes_dict, edges_dict, tree } = processValues();
+
+    const lst = bestWay(nodes_dict, edges_dict, tree).reverse();
+    let bestWayStr = "";
+    for (let i in lst) {
+      for (let edge_id in edges_dict) {
+        if (
+          edges_dict.hasOwnProperty(edge_id) &&
+          edges_dict[edge_id].target === lst[i].id
+        ) {
+          if (i > 0) {
+            bestWayStr += " -> ";
+          }
+          bestWayStr += edges_dict[edge_id].data.description;
+        }
+      }
+    }
+
     const nodesBounds = getRectOfNodes(getNodes());
     const imageWidth = nodesBounds.width;
     const imageHeight = nodesBounds.height;
@@ -235,7 +273,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
       },
     }).then((treeImage) => {
-      downloadPdf(treeImage);
+      downloadPdf(treeImage, bestWayStr);
     });
   };
 
