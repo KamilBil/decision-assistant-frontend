@@ -46,7 +46,6 @@ import { toPng } from "html-to-image";
 import { pdf } from "@react-pdf/renderer";
 import PdfReport from "../PdfReport/PdfReport";
 import { useAuthUser } from "react-auth-kit";
-import ChartJsImage from "chartjs-to-image";
 
 interface EditorProps {
   isNavbarActive: boolean;
@@ -80,7 +79,7 @@ const edgeTypes = {
 };
 
 const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
-  // TODO: Implement undo and redo
+// TODO: Implement undo and redo
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance>();
