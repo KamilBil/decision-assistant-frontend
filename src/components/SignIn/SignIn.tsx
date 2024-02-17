@@ -34,10 +34,10 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(apiUrl + "/token/", values);
-      localStorage.setItem("token", response.data.access);
 
       signIn({
         token: response.data.access,
+        refreshToken: response.data.refresh,
         expiresIn: 3600,
         tokenType: "Bearer",
         authState: { username: values.username },
