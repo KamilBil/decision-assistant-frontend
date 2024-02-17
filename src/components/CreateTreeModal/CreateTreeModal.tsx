@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { useTranslation } from "react-i18next";
-import { Box } from "@mui/material";
+import { Box, Snackbar, Alert } from "@mui/material";
 
 interface CreateTreeModalProps {
   open: boolean;
@@ -18,15 +18,22 @@ interface CreateTreeModalProps {
 function CreateTreeModal({ open, setOpen, createTree }: CreateTreeModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [error, setError] = useState(false);
   const { t } = useTranslation();
 
   const handleDecline = () => {
     setOpen(false);
+    setError(false);
   };
 
   const handleAccept = () => {
+    if (!title.trim() || !description.trim()) {
+      setError(true);
+      return;
+    }
     createTree(title, description, {});
     setOpen(false);
+    setError(false);
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +88,19 @@ function CreateTreeModal({ open, setOpen, createTree }: CreateTreeModalProps) {
           </Box>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={error}
+        autoHideDuration={6000}
+        onClose={() => setError(false)}
+      >
+        <Alert
+          onClose={() => setError(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {t("Both title and description are required.")}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

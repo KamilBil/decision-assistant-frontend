@@ -45,5 +45,6 @@
   "Name": "Name",
   "Actions": "Actions",
   "Delete": "Delete",
-  "Build": "Build"
+  "Build": "Build",
+  "Both title and description are required.": "Both title and description are required."
 }

@@ -46,5 +46,6 @@
   "Name": "Nazwa",
   "Actions": "Akcje",
   "Delete": "Usuń",
-  "Build": "Buduj"
+  "Build": "Buduj",
+  "Both title and description are required.": "Tytuł i nazwa są wymagane."
 }
