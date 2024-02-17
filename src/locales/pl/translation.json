@@ -47,5 +47,7 @@
   "Actions": "Akcje",
   "Delete": "Usuń",
   "Build": "Buduj",
-  "Both title and description are required.": "Tytuł i nazwa są wymagane."
+  "Both title and description are required.": "Tytuł i nazwa są wymagane.",
+  "Edit a project": "Edytuj projekt",
+  "Edit": "Edytuj"
 }

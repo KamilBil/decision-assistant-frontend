@@ -15,6 +15,17 @@ import CreateTreeModal from "../CreateTreeModal/CreateTreeModal";
 import { useTranslation } from "react-i18next";
 import useDecisionTreesApi from "../../hooks/useDecisionTreesApi";
 import { useNavigate } from "react-router-dom";
+import EditTreeModal from "../EditTreeModal/EditTreeModal";
+
+type DecisionTree = {
+  id: number;
+  title: string;
+  description: string;
+  owner: string;
+  data: any;
+  createdAt: string;
+  updatedAt: string;
+};
 
 const ProjectsManager: React.FC = () => {
   const {
@@ -28,6 +39,8 @@ const ProjectsManager: React.FC = () => {
     fetchTreeById,
   } = useDecisionTreesApi();
   const [isOpenCreateTreeModal, setIsOpenCreateTreeModal] = useState(false);
+  const [isOpenEditTreeModal, setIsOpenEditTreeModal] = useState(false);
+  const [treeToEdit, setTreeToEdit] = useState<DecisionTree|null>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -48,12 +61,20 @@ const ProjectsManager: React.FC = () => {
           createTree={createTree}
         />
       )}
+      {isOpenEditTreeModal && treeToEdit && (
+        <EditTreeModal
+          open={isOpenEditTreeModal}
+          setOpen={setIsOpenEditTreeModal}
+          editTree={editTree}
+          treeToEdit={treeToEdit}
+        />
+      )}
       <Typography variant="h6" textAlign="center"></Typography>
       <TableContainer component={Paper} color="red">
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>{t("Name")}</TableCell>
+              <TableCell>{t("Title")}</TableCell>
               <TableCell>{t("Description")}</TableCell>
               <TableCell>{t("Actions")}</TableCell>
             </TableRow>
@@ -73,6 +94,17 @@ const ProjectsManager: React.FC = () => {
                     }}
                   >
                     {t("Build")}
+                  </Button>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    style={{ margin: "2px" }}
+                    onClick={() => {
+                      setTreeToEdit(tree);
+                      setIsOpenEditTreeModal(true);
+                    }}
+                  >
+                    {t("Edit")}
                   </Button>
                   <Button
                     color="error"
