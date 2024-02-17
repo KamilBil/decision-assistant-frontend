@@ -43,7 +43,7 @@ const SignIn = () => {
         authState: { username: values.username },
       });
 
-      navigate("/editor");
+      navigate("/projects");
     } catch (err) {
       if (err && err instanceof AxiosError && err.response?.status == 401)
         setError(err.response?.status.toString());

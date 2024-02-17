@@ -24,9 +24,9 @@ const Navbar: React.FC = () => {
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Decission Assistant
         </Typography>
-        {/* <Button color="inherit" onClick={() => navigate("/projects")}>
+        <Button color="inherit" onClick={() => navigate("/projects")}>
           {t("Projects")}
-        </Button> */}
+        </Button>
         <Button color="inherit">{t("Settings")}</Button>
         <Button color="inherit">{t("Contact")}</Button>
         <Button color="inherit">{t("Account")}</Button>
