@@ -39,5 +39,14 @@
   "Remove": "Remove",
   "Report": "Report",
   "Generated with DecisionAssistant by": "Generated with DecisionAssistant by",
-  "Best path": "Best path"
+  "Best path": "Best path",
+  "Title": "Title",
+  "Create a project": "Create a project",
+  "Name": "Name",
+  "Actions": "Actions",
+  "Delete": "Delete",
+  "Build": "Build",
+  "Both title and description are required.": "Both title and description are required.",
+  "Edit a project": "Edit a project",
+  "Edit": "Edit"
 }

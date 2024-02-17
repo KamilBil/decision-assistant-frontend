@@ -40,5 +40,14 @@
   "Remove": "Usuń",
   "Report": "Raport",
   "Generated with DecisionAssistant by": "Wygenerowano w programie DecisionAssistant przez uzytkownika",
-  "Best path": "Najlepsza droga"
+  "Best path": "Najlepsza droga",
+  "Title": "Tytuł",
+  "Create a project": "Stwórz projekt",
+  "Name": "Nazwa",
+  "Actions": "Akcje",
+  "Delete": "Usuń",
+  "Build": "Buduj",
+  "Both title and description are required.": "Tytuł i nazwa są wymagane.",
+  "Edit a project": "Edytuj projekt",
+  "Edit": "Edytuj"
 }

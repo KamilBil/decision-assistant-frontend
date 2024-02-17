@@ -34,16 +34,16 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(apiUrl + "/token/", values);
-      localStorage.setItem("token", response.data.access);
 
       signIn({
         token: response.data.access,
+        refreshToken: response.data.refresh,
         expiresIn: 3600,
         tokenType: "Bearer",
         authState: { username: values.username },
       });
 
-      navigate("/editor");
+      navigate("/projects");
     } catch (err) {
       if (err && err instanceof AxiosError && err.response?.status == 401)
         setError(err.response?.status.toString());

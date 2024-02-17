@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -46,12 +46,8 @@ import { toPng } from "html-to-image";
 import { pdf } from "@react-pdf/renderer";
 import PdfReport from "../PdfReport/PdfReport";
 import { useAuthUser } from "react-auth-kit";
-import ChartJsImage from "chartjs-to-image";
-
-interface EditorProps {
-  isNavbarActive: boolean;
-  toggleNavbar: (isActive: boolean) => void;
-}
+import useDecisionTreesApi from "../../hooks/useDecisionTreesApi";
+import { useLocation } from "react-router-dom";
 
 interface FlowData {
   nodes: Node[];
@@ -79,8 +75,26 @@ const edgeTypes = {
   default_with_value: CustomEdge,
 };
 
-const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
+interface EditorProps {
+  isNavbarActive: boolean;
+  setIsNavbarActive: (open: boolean) => void;
+}
+
+const Editor: React.FC<EditorProps> = ({
+  isNavbarActive,
+  setIsNavbarActive,
+}: EditorProps) => {
   // TODO: Implement undo and redo
+  const {
+    decisionTrees,
+    isLoading,
+    error,
+    fetchTrees,
+    createTree,
+    deleteTree,
+    editTree,
+    fetchTreeById,
+  } = useDecisionTreesApi();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance>();
@@ -92,6 +106,40 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
   const { getNodes } = useReactFlow();
   const auth = useAuthUser();
   const { setViewport } = useReactFlow();
+  const location = useLocation();
+  const { id } = location.state as { id: number };
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+
+  const loadData = async () => {
+    try {
+      const data = await fetchTreeById(id);
+      setTitle(data["title"]);
+      setDescription(data["description"]);
+      if (data["data"]) {
+        setFlowState(data["data"]);
+      }
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  const saveData = async () => {
+    try {
+      const flow = rfInstance.toObject();
+      await editTree(id, {
+        title: title,
+        description: description,
+        data: flow,
+      });
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const changeTextInNode = (
     ev: React.MouseEvent<Element, MouseEvent>,
@@ -166,7 +214,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     setNodes(nodes || []);
     setEdges(edges || []);
     setViewport({ x, y, zoom });
-    console.log("getting: ", nodes);
   };
 
   const onFileSelected = useCallback(
@@ -198,7 +245,11 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
 
   const downloadPdf = async (treeImage, bestPath) => {
     const blob = await pdf(
-      <PdfReport base64Image={treeImage} author={auth().username} bestPath={bestPath}/>
+      <PdfReport
+        base64Image={treeImage}
+        author={auth().username}
+        bestPath={bestPath}
+      />
     ).toBlob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -311,30 +362,6 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
     setNodes(newNodes);
   }, [nodes, edges]);
 
-  const onSave = useCallback(() => {
-    if (rfInstance) {
-      console.log("Save: ", JSON.stringify(rfInstance.toObject()));
-    }
-
-    if (rfInstance) {
-      const flow = rfInstance.toObject();
-      localStorage.setItem(flowKey, JSON.stringify(flow));
-    }
-  }, [rfInstance]);
-
-  const onRestore = useCallback(() => {
-    const restoreFlow = async () => {
-      const rawFlow = localStorage.getItem(flowKey);
-
-      if (rawFlow) {
-        const flow: FlowData = JSON.parse(rawFlow);
-        setFlowState(flow);
-      }
-    };
-
-    restoreFlow();
-  }, [setFlowState]);
-
   const onAdd = useCallback(
     (className: string) => {
       const newNode: Node = {
@@ -405,13 +432,13 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
       <Panel position="top-right">
         <Stack direction="row" spacing={0} flexWrap="wrap">
           <Tooltip title={t("Save")}>
-            <IconButton onClick={onSave}>
+            <IconButton onClick={saveData}>
               <SaveIcon />
             </IconButton>
           </Tooltip>
 
           <Tooltip title={t("Recover")}>
-            <IconButton onClick={onRestore}>
+            <IconButton onClick={loadData}>
               <RestartAltIcon />
             </IconButton>
           </Tooltip>
@@ -444,7 +471,7 @@ const Editor: React.FC<EditorProps> = ({ isNavbarActive, toggleNavbar }) => {
         <Stack spacing={1} flexWrap="wrap">
           <Button
             variant="outlined"
-            onClick={() => toggleNavbar(!isNavbarActive)}
+            onClick={() => setIsNavbarActive(!isNavbarActive)}
           >
             {isNavbarActive ? t("Hide the navbar") : t("Show the navbar")}
           </Button>

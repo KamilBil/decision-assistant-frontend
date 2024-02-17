@@ -13,13 +13,13 @@ import { Box } from "@mui/material";
 import ProjectsManager from "./components/ProjectsManager/ProjectsManager";
 
 function App() {
-  const [isNavbarActive, setNavbarIsActive] = useState(true);
+  const [isNavbarActive, setIsNavbarActive] = useState(true);
 
   return (
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-        <Route index element={<Navigate to="/editor" />} />
+        <Route index element={<Navigate to="/projects" />} />
           <Route path="/projects" element={
             <RequireAuth loginPath="/signin">
                <Box
@@ -54,7 +54,7 @@ function App() {
                   <ReactFlowProvider>
                     <Editor
                       isNavbarActive={isNavbarActive}
-                      toggleNavbar={setNavbarIsActive}
+                      setIsNavbarActive={setIsNavbarActive}
                     />
                   </ReactFlowProvider>
                 </Box>

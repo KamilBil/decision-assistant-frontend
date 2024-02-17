@@ -1,54 +1,138 @@
 import React, { useState, useEffect } from "react";
-import { List, ListItem, ListItemText, Button, TextField } from "@mui/material";
-import axios from "axios";
-import ApiContext from "../../ApiContext";
-import { useAuthHeader } from "react-auth-kit";
+import {
+  Box,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import CreateTreeModal from "../CreateTreeModal/CreateTreeModal";
+import { useTranslation } from "react-i18next";
+import useDecisionTreesApi from "../../hooks/useDecisionTreesApi";
+import { useNavigate } from "react-router-dom";
+import EditTreeModal from "../EditTreeModal/EditTreeModal";
+
+type DecisionTree = {
+  id: number;
+  title: string;
+  description: string;
+  owner: string;
+  data: any;
+  createdAt: string;
+  updatedAt: string;
+};
 
 const ProjectsManager: React.FC = () => {
-  const [decisionTrees, setDecisionTrees] = useState<DecisionTree[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const context = React.useContext(ApiContext);
-  const { apiUrl } = context;
-  const authHeader = useAuthHeader();
+  const {
+    decisionTrees,
+    isLoading,
+    error,
+    fetchTrees,
+    createTree,
+    deleteTree,
+    editTree,
+    fetchTreeById,
+  } = useDecisionTreesApi();
+  const [isOpenCreateTreeModal, setIsOpenCreateTreeModal] = useState(false);
+  const [isOpenEditTreeModal, setIsOpenEditTreeModal] = useState(false);
+  const [treeToEdit, setTreeToEdit] = useState<DecisionTree|null>(null);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setIsLoading(true);
-    const token = authHeader();
-    axios
-      .get(apiUrl + "/trees/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setDecisionTrees(response.data.results);
-      })
-      .catch((error) => {
-        console.error("Error during data download:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    fetchTrees();
   }, []);
 
-  type DecisionTree = {
-    id: number;
-    title: string;
-    description: string;
-    owner: string;
-    data: any;
-    createdAt: string;
-    updatedAt: string;
+  const handleBuildTree = (id: number) => {
+    navigate("/editor", { state: { id } });
   };
 
   return (
-    <List>
-      {decisionTrees.map((item, index) => (
-        <ListItem key={index}>
-          <ListItemText primary={item.title} />
-        </ListItem>
-      ))}
-    </List>
+    <Box m={2}>
+      {isOpenCreateTreeModal && (
+        <CreateTreeModal
+          open={isOpenCreateTreeModal}
+          setOpen={setIsOpenCreateTreeModal}
+          createTree={createTree}
+        />
+      )}
+      {isOpenEditTreeModal && treeToEdit && (
+        <EditTreeModal
+          open={isOpenEditTreeModal}
+          setOpen={setIsOpenEditTreeModal}
+          editTree={editTree}
+          treeToEdit={treeToEdit}
+        />
+      )}
+      <Typography variant="h6" textAlign="center"></Typography>
+      <TableContainer component={Paper} color="red">
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t("Title")}</TableCell>
+              <TableCell>{t("Description")}</TableCell>
+              <TableCell>{t("Actions")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {decisionTrees.map((tree) => (
+              <TableRow key={tree.id}>
+                <TableCell>{tree.title}</TableCell>
+                <TableCell>{tree.description}</TableCell>
+                <TableCell>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    style={{ margin: "2px" }}
+                    onClick={() => {
+                      handleBuildTree(tree.id);
+                    }}
+                  >
+                    {t("Build")}
+                  </Button>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    style={{ margin: "2px" }}
+                    onClick={() => {
+                      setTreeToEdit(tree);
+                      setIsOpenEditTreeModal(true);
+                    }}
+                  >
+                    {t("Edit")}
+                  </Button>
+                  <Button
+                    color="error"
+                    variant="outlined"
+                    style={{ margin: "2px" }}
+                    onClick={() => deleteTree(tree.id)}
+                  >
+                    {t("Delete")}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Box display="flex" justifyContent="center" alignItems="center">
+        <Button
+          color="secondary"
+          variant="outlined"
+          style={{ marginTop: "1rem" }}
+          onClick={() => {
+            setIsOpenCreateTreeModal(true);
+          }}
+        >
+          {t("Create a project")}
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
